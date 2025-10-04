@@ -14,6 +14,8 @@ def serialize_animal(animal_obj):
     characteristics = animal_obj.get("characteristics", {})
     diet = characteristics.get("diet")
     type_ = characteristics.get("type")
+    lifespan = characteristics.get("lifespan")
+    slogan = characteristics.get("slogan")
 
     output = '<li class="cards__item">\n'
 
@@ -29,6 +31,10 @@ def serialize_animal(animal_obj):
         output += f'    <strong>Location:</strong> {locations[0]}<br/>\n'
     if type_:
         output += f'    <strong>Type:</strong> {type_}<br/>\n'
+    if lifespan:
+        output += f'    <strong>Lifespan:</strong> {lifespan}<br/>\n'
+    if slogan:
+        output += f'    <strong>Slogan:</strong> {slogan}<br/>\n'
     output += '  </p>\n'
 
     # End card list item
