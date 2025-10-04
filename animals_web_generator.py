@@ -21,19 +21,24 @@ for animal in animals_data:
     diet = characteristics.get("diet")
     type_ = characteristics.get("type")
 
-    # Begin <li>
+    # Begin card HTML
     output += '<li class="cards__item">\n'
 
+    # Card title for name
     if name:
-        output += f"Name: {name}<br/>\n"
-    if diet:
-        output += f"Diet: {diet}<br/>\n"
-    if locations:
-        output += f"Location: {locations[0]}<br/>\n"
-    if type_:
-        output += f"Type: {type_}<br/>\n"
+        output += f'  <div class="card__title">{name}</div>\n'
 
-    # End </li>
+    # Card text for details
+    output += '  <p class="card__text">\n'
+    if diet:
+        output += f'    <strong>Diet:</strong> {diet}<br/>\n'
+    if locations:
+        output += f'    <strong>Location:</strong> {locations[0]}<br/>\n'
+    if type_:
+        output += f'    <strong>Type:</strong> {type_}<br/>\n'
+    output += '  </p>\n'
+
+    # End card list item
     output += '</li>\n'
 
 
