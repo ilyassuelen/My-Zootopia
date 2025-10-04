@@ -1,28 +1,21 @@
 import json
 
+
 def load_data(file_path):
   """ Loads a JSON file """
   with open(file_path, "r", encoding="utf-8") as handle:
     return json.load(handle)
 
 
-# Load JSON-Data
-animals_data = load_data('animals_data.json')
-
-
-# Generate output string
-output = ""
-
-for animal in animals_data:
-    # append information to each string
-    name = animal.get("name")
-    locations = animal.get("locations", [])
-    characteristics = animal.get("characteristics", {})
+def serialize_animal(animal_obj):
+    """Serializes an animal object into an HTML card list item."""
+    name = animal_obj.get("name")
+    locations = animal_obj.get("locations", [])
+    characteristics = animal_obj.get("characteristics", {})
     diet = characteristics.get("diet")
     type_ = characteristics.get("type")
 
-    # Begin card HTML
-    output += '<li class="cards__item">\n'
+    output = '<li class="cards__item">\n'
 
     # Card title for name
     if name:
@@ -41,16 +34,31 @@ for animal in animals_data:
     # End card list item
     output += '</li>\n'
 
+    return output
 
-# Read Template
-with open("animals_template.html", "r", encoding="utf-8") as fileobj:
-    template = fileobj.read()
 
-# Replace Placeholder
-html_output = template.replace("__REPLACE_ANIMALS_INFO__", output)
+def main():
+    # Load JSON data
+    animals_data = load_data("animals_data.json")
 
-# Write new File
-with open("animals.html", "w", encoding="utf-8") as fileobj:
-    fileobj.write(html_output)
+    # Generate HTML output
+    output = ""
+    for animal_obj in animals_data:
+        output += serialize_animal(animal_obj)
 
-print("Created 'animals.html' with HTML serialization!")
+    # Read template
+    with open("animals_template.html", "r", encoding="utf-8") as fileobj:
+        template = fileobj.read()
+
+    # Replace placeholder
+    html_output = template.replace("__REPLACE_ANIMALS_INFO__", output)
+
+    # Write final HTML File
+    with open("animals.html", "w", encoding="utf-8") as fileobj:
+        fileobj.write(html_output)
+
+    print("Created 'animals.html' with HTML serialization!")
+
+
+if __name__ == "__main__":
+    main()
