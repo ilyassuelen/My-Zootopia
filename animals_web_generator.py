@@ -2,7 +2,7 @@ import json
 
 def load_data(file_path):
   """ Loads a JSON file """
-  with open(file_path, "r") as handle:
+  with open(file_path, "r", encoding="utf-8") as handle:
     return json.load(handle)
 
 
@@ -10,7 +10,9 @@ def load_data(file_path):
 animals_data = load_data('animals_data.json')
 
 
-# Iterate over all animals
+# Generate output string
+output = ""
+
 for animal in animals_data:
     name = animal.get("name")
     locations = animal.get("locations", [])
@@ -19,12 +21,25 @@ for animal in animals_data:
     type_ = characteristics.get("type")
 
     if name:
-        print(f"Name: {name}")
+        output += f"Name: {name}\n"
     if diet:
-        print(f"Diet: {diet}")
+        output += f"Diet: {diet}\n"
     if locations:
-        print(f"Location: {locations[0]}")
+        output += f"Location: {locations[0]}\n"
     if type_:
-        print(f"Type: {type_}")
+        output += f"Type: {type_}\n"
 
-    print()
+    output += "\n"
+
+# Read Template
+with open("animals_template.html", "r", encoding="utf-8") as fileobj:
+    template = fileobj.read()
+
+# Replace Placeholder
+html_output = template.replace("__REPLACE_ANIMALS_INFO__", output)
+
+# Write new File
+with open("animals.html", "w", encoding="utf-8") as fileobj:
+    fileobj.write(html_output)
+
+print("Created 'animals.html'!")
