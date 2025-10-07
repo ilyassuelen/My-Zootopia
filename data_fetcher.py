@@ -1,7 +1,11 @@
 import requests
 import urllib.parse
+import os
+from dotenv import load_dotenv
 
-API_KEY = "roKB7lb0UTVxsu4nUzxZeg==1igNpbrf1k2qAIQJ"
+load_dotenv()  # Loads the .env file
+
+API_KEY = os.getenv("API_KEY")
 
 def fetch_data(animal):
     animal_encoded = urllib.parse.quote(animal)  # encode name for URL
