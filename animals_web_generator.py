@@ -1,77 +1,65 @@
-import requests
-
+from data_fetcher import fetch_data
 
 def serialize_animal(animal_obj):
     """Serializes an animal object into an HTML card list item."""
-    name = animal_obj.get("name")
+    name = animal_obj.get("name", "Unknown")
     locations = animal_obj.get("locations", [])
     characteristics = animal_obj.get("characteristics", {})
-    diet = characteristics.get("diet")
-    type_ = characteristics.get("type")
-    lifespan = characteristics.get("lifespan")
-    slogan = characteristics.get("slogan")
+
+    diet = characteristics.get("diet", "Unknown")
+    animal_type = characteristics.get("type", "Unknown")
+    lifespan = characteristics.get("lifespan", "Unknown")
+    slogan = characteristics.get("slogan", "")
+    habitat = characteristics.get("habitat", "Unknown")
 
     output = '<li class="cards__item">\n'
-
-    # Card title for name
-    if name:
-        output += f'  <div class="card__title">{name}</div>\n'
-
-    # Card text for details
+    output += f'  <div class="card__title">{name}</div>\n'
     output += '  <p class="card__text">\n'
-    if diet:
-        output += f'    <strong>Diet:</strong> {diet}<br/>\n'
+    output += f'    <strong>Type:</strong> {animal_type}<br/>\n'
+    output += f'    <strong>Diet:</strong> {diet}<br/>\n'
     if locations:
-        output += f'    <strong>Location:</strong> {locations[0]}<br/>\n'
-    if type_:
-        output += f'    <strong>Type:</strong> {type_}<br/>\n'
-    if lifespan:
-        output += f'    <strong>Lifespan:</strong> {lifespan}<br/>\n'
+        output += f'    <strong>Location:</strong> {", ".join(locations)}<br/>\n'
+    output += f'    <strong>Lifespan:</strong> {lifespan}<br/>\n'
     if slogan:
-        output += f'    <strong>Slogan:</strong> {slogan}<br/>\n'
+        output += f'    <em>"{slogan}"</em><br/>\n'
     output += '  </p>\n'
-
-    # End card list item
     output += '</li>\n'
 
     return output
 
 
 def main():
-    # Prompt for animal name
-    animal_name = input("Enter a name of an animal: ")
+    animal = input("Enter the name of an animal: ").strip()
+    animals_data = fetch_data(animal)
 
-    # Load JSON data from API
-    API_URL = f"https://api.api-ninjas.com/v1/animals?name={animal_name}"
-    API_KEY = "roKB7lb0UTVxsu4nUzxZeg==1igNpbrf1k2qAIQJ"
-
-    response = requests.get(API_URL, headers={"X-Api-Key": API_KEY})
-
-    if response.status_code == 200:
-        animals_data = response.json()
-    else:
-        print("Error fetching data:", response.status_code, response.text)
-        return
-
-    # Check if animals_data is empty
+    # Check if animals_data is empty or None
     if not animals_data:
-        html_output = f'<h2>The animal "{animal_name}" does not exist.</h2>'
+        html_output = f"""
+        <html>
+        <head><title>No Results</title></head>
+        <body>
+            <h2>The animal "{animal}" doesn't exist or was not found.</h2>
+        </body>
+        </html>
+        """
     else:
         # Generate HTML output
-        output = ""
+        animals_html = ""
         for animal_obj in animals_data:
-            output += serialize_animal(animal_obj)
+            animals_html += serialize_animal(animal_obj)
+
         # Read template
         with open("animals_template.html", "r", encoding="utf-8") as fileobj:
             template = fileobj.read()
+
         # Replace placeholder
-        html_output = template.replace("__REPLACE_ANIMALS_INFO__", output)
+        html_output = template.replace("__REPLACE_ANIMALS_INFO__", animals_html)
 
     # Write final HTML File
-    with open("animals.html", "w", encoding="utf-8") as fileobj:
-        fileobj.write(html_output)
+    with open("animals.html", "w", encoding="utf-8") as file:
+        file.write(html_output)
 
-    print("Website was successfully generated to the file animals.html.")
+    print("Website was successfully generated as 'animals.html'.")
 
 
 if __name__ == "__main__":
