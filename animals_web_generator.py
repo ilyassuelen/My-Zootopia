@@ -1,10 +1,4 @@
-import json
-
-
-def load_data(file_path):
-  """ Loads a JSON file """
-  with open(file_path, "r", encoding="utf-8") as handle:
-    return json.load(handle)
+import requests
 
 
 def serialize_animal(animal_obj):
@@ -44,26 +38,40 @@ def serialize_animal(animal_obj):
 
 
 def main():
-    # Load JSON data
-    animals_data = load_data("animals_data.json")
+    # Prompt for animal name
+    animal_name = input("Enter a name of an animal: ")
 
-    # Generate HTML output
-    output = ""
-    for animal_obj in animals_data:
-        output += serialize_animal(animal_obj)
+    # Load JSON data from API
+    API_URL = f"https://api.api-ninjas.com/v1/animals?name={animal_name}"
+    API_KEY = "roKB7lb0UTVxsu4nUzxZeg==1igNpbrf1k2qAIQJ"
 
-    # Read template
-    with open("animals_template.html", "r", encoding="utf-8") as fileobj:
-        template = fileobj.read()
+    response = requests.get(API_URL, headers={"X-Api-Key": API_KEY})
 
-    # Replace placeholder
-    html_output = template.replace("__REPLACE_ANIMALS_INFO__", output)
+    if response.status_code == 200:
+        animals_data = response.json()
+    else:
+        print("Error fetching data:", response.status_code, response.text)
+        return
+
+    # Check if animals_data is empty
+    if not animals_data:
+        html_output = f'<h2>The animal "{animal_name}" does not exist.</h2>'
+    else:
+        # Generate HTML output
+        output = ""
+        for animal_obj in animals_data:
+            output += serialize_animal(animal_obj)
+        # Read template
+        with open("animals_template.html", "r", encoding="utf-8") as fileobj:
+            template = fileobj.read()
+        # Replace placeholder
+        html_output = template.replace("__REPLACE_ANIMALS_INFO__", output)
 
     # Write final HTML File
     with open("animals.html", "w", encoding="utf-8") as fileobj:
         fileobj.write(html_output)
 
-    print("Created 'animals.html' with HTML serialization!")
+    print("Website was successfully generated to the file animals.html.")
 
 
 if __name__ == "__main__":
